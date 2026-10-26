@@ -1,0 +1,108 @@
+:root {
+  /* Brand Palette - DVR & Dr. HS MIC College of Technology */
+  --primary: #1e3a8a;          /* Deep College Blue */
+  --primary-hover: #1e40af;
+  --primary-light: #dbeafe;
+  --secondary: #0ea5e9;        /* Tech Sky Blue */
+  --accent: #10b981;           /* Emerald Navigation Green */
+  --accent-hover: #059669;
+  --warning: #f59e0b;          /* Amber Gold */
+  --danger: #ef4444;           /* Red */
+  --info: #6366f1;             /* Indigo */
+
+  /* Neutral & Dark Theme Base */
+  --bg-app: #0b1329;           /* Deep Midnight Navy */
+  --bg-surface: #111e38;       /* Card Background */
+  --bg-surface-elevated: #1a2c4e;
+  --bg-glass: rgba(17, 30, 56, 0.75);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-highlight: rgba(14, 165, 233, 0.4);
+
+  /* Typography Colors */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #0f172a;
+
+  /* Map Specific Colors */
+  --map-bg: #0d1b2a;
+  --map-road: #243b55;
+  --map-road-dash: #38bdf8;
+  --map-building: #1e293b;
+  --map-building-stroke: #334155;
+  --map-building-active: #3b82f6;
+  --map-grass: #064e3b;
+  --map-grass-light: #047857;
+  --map-playground: #14532d;
+  --map-parking: #334155;
+  --map-route-line: #10b981;
+  --map-route-glow: rgba(16, 185, 129, 0.4);
+  --map-marker-pin: #ef4444;
+
+  /* Shadows & Glassmorphism */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.35);
+  --shadow-green-glow: 0 0 20px rgba(16, 185, 129, 0.4);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Layout & Transitions */
+  --header-height: 70px;
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', 'Inter', -apple-system, sans-serif;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --font-scale: 1;
+}
+
+/* Light Theme Overrides */
+body.light-theme {
+  --bg-app: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --border-color: #e2e8f0;
+  --border-highlight: rgba(30, 58, 138, 0.3);
+
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+  --text-inverse: #ffffff;
+
+  --map-bg: #e2e8f0;
+  --map-road: #cbd5e1;
+  --map-road-dash: #0284c7;
+  --map-building: #ffffff;
+  --map-building-stroke: #94a3b8;
+  --map-building-active: #2563eb;
+  --map-grass: #dcfce7;
+  --map-grass-light: #bbf7d0;
+  --map-playground: #86efac;
+  --map-parking: #cbd5e1;
+  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* High Contrast Accessibility Mode */
+body.high-contrast {
+  --bg-app: #000000;
+  --bg-surface: #111111;
+  --bg-surface-elevated: #222222;
+  --border-color: #ffff00;
+  --text-main: #ffffff;
+  --text-muted: #ffff00;
+  --accent: #00ff00;
+  --primary: #0088ff;
+  --map-bg: #000000;
+  --map-building: #111111;
+  --map-building-stroke: #ffff00;
+  --map-route-line: #ffff00;
+}

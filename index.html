@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIC Campus Explorer | Smart Campus Navigation System</title>
+  <meta name="description"
+    content="Official Smart Campus Navigation System for DVR & Dr. HS MIC College of Technology. Real-time routing, floor explorer, QR positioning, voice guidance, and campus map.">
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <!-- Application Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/modals.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b1329">
+</head>
+
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar" role="banner">
+    <div class="brand-container" data-view="dashboard">
+      <div class="brand-logo" aria-hidden="true"><svg viewBox="0 0 24 24">
+          <path d="M3 21V5l9-3 9 3v16M3 9h18M8 9v12M16 9v12M1 21h22" />
+        </svg></div>
+      <div class="brand-title">
+        <span class="brand-name">MIC CAMPUS EXPLORER</span>
+        <span class="brand-subtitle">DVR & Dr. HS MIC College of Technology</span>
+      </div>
+    </div>
+
+    <!-- Desktop Navigation Menu -->
+    <nav class="nav-menu" role="navigation" aria-label="Main Navigation">
+      <button class="nav-item-btn active" data-view="dashboard"><span>🏠</span> Home </button>
+      <button class="nav-item-btn" data-view="map"><span>🗺️</span> Campus Map</button>
+      <button class="nav-item-btn" data-view="explorer"><span class="nav-svg-icon"><svg viewBox="0 0 24 24">
+            <path d="M3 21V4h18v17M7 8h3M14 8h3M7 12h3M14 12h3M10 21v-4h4v4" />
+          </svg></span> Floor Explorer</button>
+      <button class="nav-item-btn" data-view="facilities"><span>📍</span> CampusFacilities</button>
+      <button class="nav-item-btn" data-view="directory"><span>📞</span> Contacts</button>
+      <button class="nav-item-btn" data-view="about"><span>ℹ️</span> About</button>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="nav-actions">
+      <div class="campus-status-pill" title="Only Entrance: Main Gate on NH-65">
+        <span class="status-dot"></span> <span>MAIN GATE OPEN</span>
+      </div>
+
+      <button class="icon-btn" id="btn-theme-toggle" title="Toggle Dark/Light Mode"
+        aria-label="Toggle Theme">☀️</button>
+      <button class="icon-btn" id="btn-open-a11y" title="Accessibility Settings"
+        aria-label="Accessibility Settings">♿</button>
+      <button class="icon-btn" id="btn-open-admin" title="Admin Data & DB Portal" aria-label="Admin Portal">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main role="main">
+
+    <!-- VIEW 1: DASHBOARD / HOME -->
+    <section id="section-dashboard" class="view-section">
+
+      <!-- Hero Header & Search -->
+      <div class="hero-section">
+        <div class="hero-tag">SMART CAMPUS NAVIGATION SYSTEM • DVR & DR. HS MIC COLLEGE OF TECHNOLOGY</div>
+        <h1 class="hero-title">Explore. Search. Navigate.<br><span>Discover MIC Campus</span></h1>
+        <p class="hero-subtitle">Interactive indoor floor navigation, QR localization, Dijkstra shortest route finder,
+          and voice-guided directions for MIC College of Technology.</p>
+
+        <!-- Smart Search Bar -->
+        <div class="search-wrapper">
+          <div class="smart-search-box">
+            <span class="search-icon-prefix">🔎</span>
+            <input type="text" id="smart-search-input" class="smart-search-input"
+              placeholder="Where do you want to go? (e.g. BED Block, Central Library, CSE Dept, Room 1108...)"
+              autocomplete="off" aria-label="Campus Search Query">
+            <div class="search-action-btns">
+              <button class="search-btn-voice" id="btn-voice-search" title="Voice Search">🎙️ Voice</button>
+              <button class="search-btn-qr" id="search-btn-qr" title="Scan QR Code">📷 Scan QR</button>
+            </div>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div class="category-filter-pills">
+            <button class="category-pill active" data-cat="all">All</button>
+            <button class="category-pill" data-cat="academic">Academic & Engineering</button>
+            <button class="category-pill" data-cat="labs">Labs & Workshops</button>
+            <button class="category-pill" data-cat="library">Central Library</button>
+            <button class="category-pill" data-cat="food">Canteen & Food</button>
+            <button class="category-pill" data-cat="sports">Sports & Gym</button>
+            <button class="category-pill" data-cat="hostel">Hostels</button>
+            <button class="category-pill" data-cat="transport">Transport & Parking</button>
+          </div>
+
+          <!-- Dynamic Autocomplete Search Dropdown -->
+          <div id="search-results-dropdown" class="search-results-dropdown" role="listbox"></div>
+        </div>
+
+        <!-- Quick Access Chips -->
+        <div class="quick-access-bar">
+          <button class="quick-chip" data-query="BED Block"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <path d="M3 21V5l9-3 9 3v16M3 9h18M8 9v12M16 9v12M1 21h22" />
+              </svg></span> BED Block</button>
+          <button class="quick-chip" data-query="Central Library"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <path d="M4 4h16v17H4zM8 4v17M12 8h5M12 12h5M12 16h5" />
+              </svg></span> Central Library</button>
+          <button class="quick-chip" data-query="CSE Department"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="13" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg></span> CSE Dept</button>
+          <button class="quick-chip" data-query="Administrative Office"><span class="home-chip-icon"
+              aria-hidden="true"><svg viewBox="0 0 24 24">
+                <path d="M4 21V5l8-3 8 3v16M4 9h16M8 9v12M16 9v12M2 21h20" />
+              </svg></span> Principal & Admin</button>
+          <button class="quick-chip" data-query="Examination Section"><span class="home-chip-icon"
+              aria-hidden="true"><svg viewBox="0 0 24 24">
+                <rect x="5" y="3" width="14" height="18" rx="2" />
+                <path d="m8 9 2 2 4-4M8 15h8" />
+              </svg></span> Exam Cell</button>
+          <button class="quick-chip" data-query="Training & Placement Cell"><span class="home-chip-icon"
+              aria-hidden="true"><svg viewBox="0 0 24 24">
+                <rect x="3" y="7" width="18" height="13" rx="2" />
+                <path d="M8 7V4h8v3M3 12h18M10 12v2h4v-2" />
+              </svg></span> T & P Cell</button>
+          <button class="quick-chip" data-query="Main Canteen"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <path d="M4 3v7a3 3 0 0 0 6 0V3M7 3v18M17 3v18M17 3c3 2 4 6 0 9" />
+              </svg></span> Canteen</button>
+          <button class="quick-chip" data-query="Play Ground"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m12 3 3 6-3 4-3-4 3-6M3 12h6l3 9 3-9h6" />
+              </svg></span> Play Ground</button>
+          <button class="quick-chip" data-query="Boys Hostel"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <path d="M3 21V4h18v17M7 8h3M14 8h3M7 12h3M14 12h3M10 21v-4h4v4" />
+              </svg></span> Boys Hostel</button>
+          <button class="quick-chip" data-query="Main Gate"><span class="home-chip-icon" aria-hidden="true"><svg
+                viewBox="0 0 24 24">
+                <path d="M3 21V5l9-3 9 3v16M3 9h18M8 9v12M16 9v12M1 21h22" />
+              </svg></span> Main Gate</button>
+        </div>
+
+        <!-- Animated Statistics Counters -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="stat-count-buildings">0</div>
+            <div class="stat-label">Campus Buildings</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-count-departments">0</div>
+            <div class="stat-label">Departments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-count-floors">0</div>
+            <div class="stat-label">Floor Levels</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-count-rooms">0</div>
+            <div class="stat-label">Verified Rooms</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-count-facilities">0</div>
+            <div class="stat-label">Facilities</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="stat-count-qr">0</div>
+            <div class="stat-label">QR Hotspots</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campus Highlights & Announcements -->
+      <div class="main-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">📢 Campus Announcements & Notices</h2>
+            <p class="section-desc">Latest autonomous notices, exam schedules, and recruitment updates.</p>
+          </div>
+        </div>
+        <div id="announcements-feed" style="margin-bottom: 3rem;"></div>
+
+        <!-- Quick Explorer Previews -->
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><span class="nav-svg-icon"><svg viewBox="0 0 24 24">
+                  <path d="M3 21V5l9-3 9 3v16M3 9h18M8 9v12M16 9v12M1 21h22" />
+                </svg></span> Campus Landmarks & Academic Blocks</h2>
+            <p class="section-desc">Verified buildings from the official MIC College Plan layout.</p>
+          </div>
+          <button class="btn btn-outline" data-view="explorer" style="flex:none;">View All Blocks & Floors →</button>
+        </div>
+        <div id="buildings-cards-grid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: INTERACTIVE CAMPUS MAP & NAVIGATION -->
+    <section id="section-map" class="view-section" style="display: none;">
+      <div class="main-container" style="padding-top: 1.5rem;">
+
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">🗺️ Interactive Campus Map & Route Finder</h2>
+            <p class="section-desc">Vector layout based on official MIC College Plan. <em>(Note: Outside access is
+                strictly via the Main Gate; side/closed perimeter routes are blocked)</em>.</p>
+          </div>
+        </div>
+
+        <!-- Map & Navigation Wrapper -->
+        <div class="map-view-wrapper">
+
+          <!-- Map Canvas Viewport -->
+          <div class="map-viewport" id="map-viewport-container">
+
+            <!-- Map Top Bar -->
+            <div class="map-top-bar">
+              <!-- Dual View Toggle -->
+              <div class="map-mode-toggle">
+                <button class="mode-toggle-btn active" id="btn-view-vector-map">🗺️ Internal Campus Map</button>
+                <button class="mode-toggle-btn" id="btn-view-google-map">🌍 Google Maps (Road Navigation)</button>
+              </div>
+
+              <!-- Layer Filters -->
+              <div class="map-layers-pills">
+                <button class="layer-filter-chip active" data-layer="all">All Layers</button>
+                <button class="layer-filter-chip" data-layer="academic">Academic</button>
+                <button class="layer-filter-chip" data-layer="labs">Labs</button>
+                <button class="layer-filter-chip" data-layer="library">Library</button>
+                <button class="layer-filter-chip" data-layer="food">Food</button>
+                <button class="layer-filter-chip" data-layer="sports">Sports</button>
+                <button class="layer-filter-chip" data-layer="hostel">Hostels</button>
+                <button class="layer-filter-chip" data-layer="parking">Parking</button>
+              </div>
+            </div>
+
+            <!-- SVG Vector Canvas -->
+            <div id="campus-map-viewport" style="width:100%; height:100%;"></div>
+
+            <!-- Google Maps Embed Container (Hidden by default) -->
+            <div id="google-maps-view"></div>
+
+            <!-- Floating Map Controls -->
+            <div class="map-floating-controls">
+              <button class="map-control-btn" onclick="window.CampusMap.zoomIn()" title="Zoom In">+</button>
+              <button class="map-control-btn" onclick="window.CampusMap.zoomOut()" title="Zoom Out">-</button>
+              <button class="map-control-btn" onclick="window.CampusMap.resetView()" title="Reset View">🎯</button>
+              <button class="map-control-btn" id="btn-locate-me" title="Locate My GPS Position">📍</button>
+              <button class="map-control-btn" id="btn-external-road-nav"
+                title="External Road Directions (Google Maps)">🚗</button>
+            </div>
+
+            <!-- Map Legend -->
+            <div class="map-legend-overlay">
+              <div class="legend-item">
+                <div class="legend-color-box" style="background:#1e40af"></div> Academic
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background:#0d9488"></div> Labs
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background:#14532d"></div> Sports
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background:#db2777"></div> Hostels
+              </div>
+              <div class="legend-item">
+                <div class="legend-color-box" style="background:#10b981"></div> Active Route
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Control Drawer -->
+          <div class="map-nav-drawer" id="map-nav-drawer">
+            <div class="drawer-header">
+              <div class="drawer-title"><span>🧭</span> Campus Route Finder</div>
+            </div>
+
+            <div class="drawer-body">
+
+              <!-- Origin & Destination Selector -->
+              <div class="route-selector-box">
+                <div class="input-row">
+                  <span class="input-badge-dot start"></span>
+                  <select id="nav-origin-select" class="route-select" aria-label="Select Route Origin"
+                    placeholder="Select Origin"></select>
+                </div>
+
+                <button id="btn-swap-route" class="route-swap-btn" title="Swap Origin and Destination">⇅</button>
+
+                <div class="input-row">
+                  <span class="input-badge-dot end"></span>
+                  <select id="nav-dest-select" class="route-select" aria-label="Select Route Destination"
+                    placeholder="Select Destination"></select>
+                </div>
+
+                <button id="btn-calculate-route" class="btn btn-primary" style="margin-top:0.35rem;">Calculate Shortest
+                  Route</button>
+              </div>
+
+              <!-- Distance, Time & Route Path Banner -->
+              <div id="route-metrics-banner" class="route-metrics-banner"
+                style="flex-direction:column; align-items:center;">
+                <div id="route-summary"
+                  style="width:100%; margin-bottom:0.5rem; background:rgba(255,255,255,0.06); padding:0.4rem 0.6rem; border-radius:6px; font-size:0.8rem; color:#38bdf8; font-weight:700;">
+                  Path: Select an Origin and Destination</div>
+                <div style="display:flex; justify-content:space-around; width:100%;">
+                  <div class="metric-item">
+                    <div id="route-distance" class="metric-val">--</div>
+                    <div class="metric-lbl">Distance</div>
+                  </div>
+                  <div class="metric-item">
+                    <div id="route-time" class="metric-val">--</div>
+                    <div class="metric-lbl">Walking Time</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Voice Guidance Controller -->
+              <div class="voice-guidance-bar">
+                <button id="btn-start-voice-guidance" class="btn btn-accent btn-mini" style="flex:1;"><span>🔊</span>
+                  Start Voice Guidance</button>
+                <div class="voice-btn-group">
+                  <button id="btn-repeat-voice" class="icon-btn" style="width:32px; height:32px; font-size:0.9rem;"
+                    title="Repeat Step">↻</button>
+                  <select id="voice-rate-select"
+                    style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:6px; font-size:0.75rem; color:var(--text-main); padding:0.2rem;"
+                    title="Speech Speed">
+                    <option value="0.85">0.8x</option>
+                    <option value="1.0" selected>1.0x</option>
+                    <option value="1.2">1.2x</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Step-by-Step Directions List -->
+              <div>
+                <div
+                  style="font-size:0.85rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.6rem;">
+                  Turn-By-Turn Steps:</div>
+                <div id="turn-steps-list" class="turn-steps-list">
+                  <div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.9rem;">
+                    Select an Origin and Destination above to generate your customized step-by-step route.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 3: BUILDING & FLOOR EXPLORER -->
+    <section id="section-explorer" class="view-section" style="display: none;">
+      <div class="main-container" style="padding-top: 1.5rem;">
+
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><span class="nav-svg-icon"><svg viewBox="0 0 24 24">
+                  <path d="M3 21V4h18v17M7 8h3M14 8h3M7 12h3M14 12h3M10 21v-4h4v4" />
+                </svg></span> Building & Floor Explorer</h2>
+            <p class="section-desc">
+              Explore campus blocks, floors, departments and verified rooms.
+            </p>
+          </div>
+        </div>
+
+        <!-- =========================================
+         STEP INDICATOR
+    ========================================== -->
+        <div class="explorer-steps">
+          <div class="explorer-step active" id="explorer-step-block">
+            <span>1</span>
+            <strong>Block</strong>
+          </div>
+
+          <div class="explorer-step" id="explorer-step-floor">
+            <span>2</span>
+            <strong>Floor</strong>
+          </div>
+
+          <div class="explorer-step" id="explorer-step-room">
+            <span>3</span>
+            <strong>Room</strong>
+          </div>
+
+          <div class="explorer-step" id="explorer-step-details">
+            <span>4</span>
+            <strong>Details</strong>
+          </div>
+        </div>
+
+        <!-- =========================================
+         STEP 1 : BLOCKS
+    ========================================== -->
+        <div id="explorer-block-view" class="explorer-panel">
+
+          <div class="explorer-panel-header">
+            <div>
+              <span class="explorer-eyebrow">STEP 1</span>
+              <h3>Select a Campus Block</h3>
+              <p>Choose the building you want to explore.</p>
+            </div>
+          </div>
+
+          <div id="explorer-blocks-grid" class="explorer-blocks-grid">
+            <div class="explorer-loading">
+              Loading campus blocks...
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- =========================================
+         STEP 2 : FLOORS
+    ========================================== -->
+        <div id="explorer-floor-view" class="explorer-panel" style="display:none;">
+
+          <div class="explorer-breadcrumb">
+            <button id="explorer-back-blocks" class="explorer-back-btn">
+              ← Blocks
+            </button>
+
+            <div>
+              <span class="explorer-eyebrow">STEP 2</span>
+              <h3 id="selected-building-name">Select Floor</h3>
+              <p id="selected-building-description">
+                Choose a floor to continue.
+              </p>
+            </div>
+          </div>
+
+          <div id="explorer-floors-grid" class="explorer-floors-grid">
+          </div>
+
+        </div>
+
+
+        <!-- =========================================
+         STEP 3 : ROOMS
+    ========================================== -->
+        <div id="explorer-room-view" class="explorer-panel" style="display:none;">
+
+          <div class="explorer-breadcrumb">
+
+            <button id="explorer-back-floors" class="explorer-back-btn">
+              ← Floors
+            </button>
+
+            <div>
+              <span class="explorer-eyebrow">STEP 3</span>
+              <h3 id="selected-floor-name">Rooms</h3>
+              <p id="selected-floor-description">
+                Select a room.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="explorer-room-toolbar">
+
+            <div class="explorer-room-count">
+              <strong id="explorer-room-count">0</strong>
+              <span>rooms available</span>
+            </div>
+
+            <input type="search" id="explorer-room-search" class="explorer-room-search"
+              placeholder="🔎 Search room number or name..." autocomplete="off" />
+
+          </div>
+
+          <div id="explorer-rooms-grid" class="explorer-rooms-grid">
+          </div>
+
+        </div>
+
+
+        <!-- =========================================
+         STEP 4 : ROOM DETAILS
+    ========================================== -->
+        <div id="explorer-details-view" class="explorer-panel" style="display:none;">
+
+          <div class="explorer-breadcrumb">
+
+            <button id="explorer-back-rooms" class="explorer-back-btn">
+              ← Rooms
+            </button>
+
+            <div>
+              <span class="explorer-eyebrow">STEP 4</span>
+              <h3>Room Details</h3>
+            </div>
+
+          </div>
+
+          <div id="explorer-room-details" class="explorer-room-details">
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+    <!-- VIEW 4: CAMPUS FACILITIES -->
+    <section id="section-facilities" class="view-section" style="display: none;">
+      <div class="main-container" style="padding-top: 1.5rem;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">📍 Campus Facilities & Amenities</h2>
+            <p class="section-desc">Central Library, Canteen, Cafeteria, Sports Arena, Hostels, Transport Depot, and
+              Parking.</p>
+          </div>
+        </div>
+        <div id="facilities-cards-grid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: DIRECTORY & CONTACTS -->
+    <section id="section-directory" class="view-section" style="display: none;">
+      <div class="main-container" style="padding-top: 1.5rem;">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">📞 Campus Directory & Key Contacts</h2>
+            <p class="section-desc">Official telephone and email contacts for Principal Secretariat, Exam Branch,
+              Placement Cell, and 24/7 Security.</p>
+          </div>
+        </div>
+        <div id="contacts-grid" class="cards-grid"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" role="navigation" aria-label="Mobile Navigation">
+    <button class="mobile-nav-btn active" data-view="dashboard">
+      <span class="icon">🏠</span> <span>Home</span>
+    </button>
+    <button class="mobile-nav-btn" data-view="map">
+      <span class="icon">🗺️</span> <span>Map</span>
+    </button>
+    <button class="mobile-nav-btn" id="btn-scan-qr">
+      <span class="icon">📷</span> <span>Scan QR</span>
+    </button>
+    <button class="mobile-nav-btn" data-view="explorer">
+      <span class="icon">🏢</span> <span>Floors</span>
+    </button>
+    <button class="mobile-nav-btn" data-view="directory">
+      <span class="icon">📞</span> <span>Directory</span>
+    </button>
+  </nav>
+  <!-- =========================================================
+     VIEW : ABOUT
+========================================================= -->
+  <section id="section-about" class="view-section" style="display: none;">
+
+    <!-- HERO -->
+    <section class="about-hero">
+
+      <div class="about-hero-content">
+
+        <span class="about-eyebrow">
+          MIC CAMPUS EXPLORER
+        </span>
+
+        <h1>
+          Navigate the campus.
+          <br>
+          <span>Find your place.</span>
+        </h1>
+
+        <p>
+          MIC Campus Explorer is a smart campus navigation platform
+          designed to help students, faculty and visitors easily
+          discover buildings, floors, classrooms, departments and
+          important campus facilities.
+        </p>
+
+      </div>
+
+      <div class="about-hero-orbit">
+
+        <div class="orbit-ring ring-one"></div>
+        <div class="orbit-ring ring-two"></div>
+
+        <div class="about-location-card">
+
+          <span>📍</span>
+
+          <div>
+            <strong>MIC Campus</strong>
+            <small>Smart Navigation</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ABOUT PROJECT -->
+    <section class="about-section">
+
+      <div class="about-section-heading">
+
+        <span>ABOUT THE PROJECT</span>
+
+        <h2>
+          One campus, one smart explorer.
+        </h2>
+
+      </div>
+
+
+      <div class="about-project-grid">
+
+        <article class="about-feature-card">
+
+          <div class="about-feature-icon">🗺️</div>
+
+          <h3>Campus Navigation</h3>
+
+          <p>
+            Find the best route between campus buildings,
+            classrooms, offices and important locations.
+          </p>
+
+        </article>
+
+
+        <article class="about-feature-card">
+
+          <div class="about-feature-icon">🏢</div>
+
+          <h3>Building Explorer</h3>
+
+          <p>
+            Explore campus buildings, floors and rooms
+            with organized location information.
+          </p>
+
+        </article>
+
+
+        <article class="about-feature-card">
+
+          <div class="about-feature-icon">🔎</div>
+
+          <h3>Smart Search</h3>
+
+          <p>
+            Quickly search for classrooms, departments,
+            facilities, buildings and campus locations.
+          </p>
+
+        </article>
+
+
+        <article class="about-feature-card">
+
+          <div class="about-feature-icon">🎙️</div>
+
+          <h3>Voice Guidance</h3>
+
+          <p>
+            Get voice-based navigation guidance so users
+            can follow directions naturally while moving
+            through the campus.
+          </p>
+
+        </article>
+
+
+        <article class="about-feature-card">
+
+          <div class="about-feature-icon">⚡</div>
+
+          <h3>Real-Time Access</h3>
+
+          <p>
+            Access current campus information and
+            navigation details whenever you need them.
+          </p>
+
+        </article>
+
+
+        <article class="about-feature-card">
+
+          <div class="about-feature-icon">📍</div>
+
+          <h3>Room & Facility Finder</h3>
+
+          <p>
+            Locate classrooms, labs, offices, departments
+            and other important campus facilities with ease.
+          </p>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section class="about-how">
+
+      <div class="about-section-heading">
+
+        <span>HOW IT WORKS</span>
+
+        <h2>
+          Find what you need in three steps.
+        </h2>
+
+      </div>
+
+
+      <div class="about-steps">
+
+        <div class="about-step">
+
+          <div class="step-number">01</div>
+
+          <div>
+
+            <h3>Choose a location</h3>
+
+            <p>
+              Select a building, floor or campus destination.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="about-step">
+
+          <div class="step-number">02</div>
+
+          <div>
+
+            <h3>Explore the details</h3>
+
+            <p>
+              View classrooms, departments and available
+              facilities.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="about-step">
+
+          <div class="step-number">03</div>
+
+          <div>
+
+            <h3>Navigate</h3>
+
+            <p>
+              Get a clear route from your current location
+              to your destination.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- VISION -->
+    <section class="about-vision">
+
+      <div>
+
+        <span class="about-eyebrow">
+          OUR VISION
+        </span>
+
+        <h2>
+          Making campus navigation
+          <br>
+          <span>simple and accessible.</span>
+        </h2>
+
+        <p>
+          The goal of MIC Campus Explorer is to make finding
+          places inside the campus faster, easier and more
+          intuitive for everyone.
+        </p>
+
+      </div>
+
+
+      <div class="vision-stat">
+
+        <strong>MIC</strong>
+
+        <span>Smart Campus</span>
+
+        <small>Navigation Platform</small>
+
+      </div>
+
+    </section>
+
+  </section>
+
+  <!-- MODAL: QR SCANNER & SIMULATOR DECK -->
+  <div id="qr-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" id="qr-modal-title"><span>📷</span> Campus QR Scanner</div>
+        <button class="modal-close-btn" id="btn-close-qr-modal" aria-label="Close Modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="qr-scanner-viewport">
+          <video id="qr-video-element" playsinline></video>
+          <div class="qr-target-frame">
+            <div class="qr-scan-laser"></div>
+          </div>
+        </div>
+
+        <div style="font-size:0.85rem; color:var(--text-muted); text-align:center;">
+          Align campus QR code within the frame to identify your exact building and floor location.
+        </div>
+
+        <div id="qr-result-box"></div>
+
+        <!-- Interactive 1-Click QR Test Deck -->
+        <div class="qr-simulator-deck">
+          <div class="simulator-title"><span>⚡</span> Quick Test Deck (1-Click QR Simulator):</div>
+          <div id="qr-simulator-chips" class="simulator-chips"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VOICE SEARCH & ASSISTANT -->
+  <div id="voice-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="voice-modal-title">
+    <div class="modal-container" style="max-width:440px;">
+      <div class="modal-header">
+        <div class="modal-title" id="voice-modal-title"><span>🎙️</span> Campus Voice Assistant</div>
+        <button class="modal-close-btn" id="btn-close-voice-modal" aria-label="Close Modal">&times;</button>
+      </div>
+
+      <div class="voice-assistant-body">
+        <div class="voice-mic-orb">🎙️</div>
+
+        <div id="voice-waveform" class="voice-waveform" style="display:none;">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+
+        <div id="voice-transcript-text" class="voice-transcript-text">
+          Listening... Say your destination (e.g. "BED Block to Central Library", "Where is CSE?")
+        </div>
+
+        <div class="voice-help-hints">
+          💡 Try saying: <em>"Where is Central Library?"</em>, <em>"BED Block to Library"</em>, or <em>"Canteen"</em>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN DATA & DB IMPORT PORTAL -->
+  <div id="admin-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+    <div class="modal-container" style="max-width:650px;">
+      <div class="modal-header">
+        <div class="modal-title" id="admin-modal-title"><span>⚙️</span> Admin Data & DB Table Importer</div>
+        <button class="modal-close-btn" id="btn-close-admin" aria-label="Close Modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Auth Section -->
+        <div id="admin-auth-section">
+          <form id="admin-auth-form" style="display:flex; flex-direction:column; gap:1rem; padding:1rem 0;">
+            <p style="font-size:0.9rem; color:var(--text-muted);">Enter administrative security key to access data
+              management & database table importer:</p>
+            <input type="password" id="admin-key-input" class="route-select"
+              placeholder="Enter Admin Passcode (Default: mictech2026)" required>
+            <button type="submit" class="btn btn-primary">Authenticate & Unlock</button>
+          </form>
+        </div>
+
+        <!-- Authenticated Admin Portal -->
+        <div id="admin-portal-body" style="display:none;">
+
+          <!-- Database Importer Section (specifically for rooms and contacts tables) -->
+          <div
+            style="background:var(--bg-surface-elevated); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem;">
+            <h4 style="margin-bottom:0.4rem; color:#38bdf8; display:flex; align-items:center; gap:0.4rem;">
+              <span>💾</span> Database Table Importer (Rooms & Contacts Only)
+            </h4>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+              Paste JSON records containing <code>"rooms"</code> and/or <code>"contacts"</code> tables from your
+              existing college database to seamlessly import them without overwriting verified campus layout or
+              navigation paths:
+            </p>
+            <textarea id="db-import-json" class="route-select" rows="4"
+              style="font-family:monospace; font-size:0.75rem;"
+              placeholder='{ "rooms": [ { "room_number": "1109", "name": "AI IoT Lab", "building_id": "bldg-macb", "floor_id": "floor-macb-ff" } ], "contacts": [ { "department": "Admissions", "role": "Officer", "name": "Admissions Desk", "phone": "+91 8678 273550", "email": "admissions@mictech.ac.in", "location": "Main Block GF" } ] }'></textarea>
+            <button id="btn-import-db-data" class="btn btn-accent btn-mini" style="margin-top:0.6rem; width:100%;">
+              ⚡ Synchronize & Import Tables
+            </button>
+          </div>
+
+          <!-- Announcement Creator -->
+          <h4 style="margin-bottom:0.75rem; color:var(--secondary);">Post New Campus Announcement</h4>
+          <form id="form-add-announcement" style="display:flex; flex-direction:column; gap:0.75rem;">
+            <input type="text" id="ann-title-input" class="route-select" placeholder="Announcement Title" required>
+            <select id="ann-category-input" class="route-select">
+              <option value="Examinations">Examinations</option>
+              <option value="Placements">Placements</option>
+              <option value="Events">Events</option>
+              <option value="General">General</option>
+            </select>
+            <textarea id="ann-content-input" class="route-select" rows="3" placeholder="Notice details / content"
+              required></textarea>
+            <select id="ann-priority-input" class="route-select">
+              <option value="normal">Normal Priority</option>
+              <option value="high">High Priority (Urgent Notice)</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Publish Announcement</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER: ACCESSIBILITY SETTINGS -->
+  <aside id="accessibility-drawer" class="accessibility-drawer" aria-label="Accessibility Settings">
+    <div class="drawer-header">
+      <div class="drawer-title"><span>♿</span> Accessibility Options</div>
+      <button class="modal-close-btn" id="btn-close-a11y" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+
+      <div class="a11y-control-row">
+        <div>
+          <div class="a11y-label">Text Scaling</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">Adjust font size across app</div>
+        </div>
+        <div style="display:flex; gap:0.35rem;">
+          <button id="btn-font-decrease" class="btn-mini btn-mini-primary">A-</button>
+          <button id="btn-font-reset" class="btn-mini btn-mini-primary">Reset</button>
+          <button id="btn-font-increase" class="btn-mini btn-mini-primary">A+</button>
+        </div>
+      </div>
+
+      <div class="a11y-control-row">
+        <div>
+          <div class="a11y-label">High Contrast Mode</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">Enhanced contrast for low vision</div>
+        </div>
+        <input type="checkbox" id="toggle-high-contrast" style="width:20px; height:20px; cursor:pointer;">
+      </div>
+
+      <div class="a11y-control-row">
+        <div>
+          <div class="a11y-label">Spoken Voice Directions</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">Voice-guided turn navigation enabled</div>
+        </div>
+        <span style="font-size:0.8rem; color:#34d399; font-weight:bold;">Active</span>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Application Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-brand">MIC CAMPUS EXPLORER</div>
+    <p>DVR & Dr. HS MIC College of Technology (Autonomous)</p>
+    <p style="font-size:0.8rem; margin-top:0.25rem;">Approved by AICTE • Permanently Affiliated to JNTUK • Accredited
+      by
+      NBA & NAAC 'A+' Grade • NH-65, Kanchikacherla, Krishna District, AP - 521180</p>
+    <p style="font-size:0.75rem; margin-top:1rem; color:var(--text-dim);">Only Official Campus Entry: Main Gate •
+      Smart
+      Hybrid Campus Positioning • Google Maps + GPS + QR Code Indoor Navigation + Web Speech AI</p>
+
+  </footer>
+
+  <!-- Application Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/mapEngine.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/voiceService.js"></script>
+  <script src="js/qrService.js"></script>
+  <script src="js/googleMaps.js"></script>
+  <script src="js/accessibility.js"></script>
+  <script src="js/adminService.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

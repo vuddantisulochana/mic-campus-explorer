@@ -1,0 +1,15 @@
+﻿{
+  "name": "MIC Campus Explorer",
+  "short_name": "MIC Campus",
+  "description": "Smart Campus Navigation System for DVR & Dr. HS MIC College of Technology",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1329",
+  "theme_color": "#0b1329",
+  "icons": [
+    {
+      "src": "icons/icon.svg", "sizes": "192x192", "type": "image/svg+xml"
+    }
+  ]
+}
+

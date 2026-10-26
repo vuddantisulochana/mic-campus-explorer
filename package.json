@@ -1,0 +1,27 @@
+{
+  "name": "mic-campus-explorer",
+  "version": "1.0.0",
+  "description": "Smart Campus Navigation System for DVR & Dr. HS MIC College of Technology",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "keywords": [
+    "campus-navigation",
+    "smart-campus",
+    "mic-college-of-technology",
+    "indoor-navigation",
+    "dijkstra-routing",
+    "qr-navigation",
+    "voice-guidance"
+  ],
+  "author": "MIC College of Technology",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7",
+    "xlsx": "^0.18.5"
+  }
+}

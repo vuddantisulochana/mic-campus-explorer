@@ -1,0 +1,524 @@
+/* Campus Map Container & Viewport */
+.map-view-wrapper {
+  position: relative;
+  width: 100%;
+  height: 650px;
+  background: var(--map-bg);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.map-viewport {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+/* SVG Campus Map Canvas */
+#campus-svg-canvas {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.05s ease-out;
+  transform-origin: 0 0;
+}
+
+/* Map Top Toolbar (Layers, Dual Mode Switch) */
+.map-top-bar {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  gap: 0.5rem;
+}
+
+.map-top-bar > * {
+  pointer-events: auto;
+}
+
+.map-mode-toggle {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.35rem;
+  display: flex;
+  gap: 0.35rem;
+  box-shadow: var(--shadow-md);
+}
+
+.mode-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all var(--transition-fast);
+}
+
+.mode-toggle-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.map-layers-pills {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.35rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  max-width: 60%;
+  box-shadow: var(--shadow-md);
+}
+
+.layer-filter-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.layer-filter-chip.active {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: white;
+}
+
+/* Floating Map Controls */
+.map-floating-controls {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.5rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.map-control-btn {
+  width: 44px;
+  height: 44px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.map-control-btn:hover {
+  background: var(--bg-surface-elevated);
+  border-color: var(--secondary);
+  transform: scale(1.05);
+}
+
+/* Map Legend / Info Badge */
+.map-legend-overlay {
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.5rem;
+  z-index: 20;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legend-color-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* SVG Vector Map Elements */
+.svg-road {
+  stroke: var(--map-road);
+  stroke-width: 22;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.svg-road-curb {
+  stroke: var(--map-road-dash);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  fill: none;
+}
+
+.svg-building {
+  fill: var(--map-building);
+  stroke: var(--map-building-stroke);
+  stroke-width: 2;
+  rx: 6;
+  ry: 6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.svg-building:hover {
+  fill: var(--primary);
+  stroke: var(--secondary);
+  filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.5));
+}
+
+.svg-building.active {
+  fill: #1e3a8a;
+  stroke: #38bdf8;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.8));
+}
+
+.svg-lawn {
+  fill: var(--map-grass);
+  stroke: var(--map-grass-light);
+  stroke-width: 1.5;
+  rx: 8;
+}
+
+.svg-playground {
+  fill: var(--map-playground);
+  stroke: #22c55e;
+  stroke-width: 2;
+  rx: 12;
+}
+
+.svg-building-label {
+  fill: var(--text-main);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+.svg-node-point {
+  fill: #38bdf8;
+  stroke: #ffffff;
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 0.2s ease;
+}
+
+.svg-node-point:hover {
+  r: 8;
+  fill: #f59e0b;
+}
+
+/* Dynamic Animated Route Path */
+.svg-route-path {
+  fill: none;
+  stroke: var(--map-route-line);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 10 10;
+  animation: routeDash 1.5s linear infinite;
+  filter: drop-shadow(0 0 8px var(--map-route-glow));
+}
+
+@keyframes routeDash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+/* Walking Animated Marker */
+.svg-walker-marker {
+  fill: #f59e0b;
+  stroke: #ffffff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 10px #f59e0b);
+}
+
+/* Pulsing "You Are Here" GPS Dot */
+.svg-gps-pin {
+  animation: gpsPulse 2s infinite ease-out;
+}
+
+@keyframes gpsPulse {
+  0% { r: 6; opacity: 1; }
+  50% { r: 16; opacity: 0.4; }
+  100% { r: 24; opacity: 0; }
+}
+
+/* Google Maps Container */
+#google-maps-view {
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+#google-maps-view.show {
+  display: block;
+}
+
+/* Interactive Navigation Side Drawer inside Map View */
+.map-nav-drawer {
+  width: 380px;
+  height: 100%;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-smooth);
+}
+
+.map-nav-drawer.collapsed {
+  transform: translateX(100%);
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.drawer-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Route Input Selectors */
+.route-selector-box {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.input-badge-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.input-badge-dot.start {
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.input-badge-dot.end {
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.route-select {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  outline: none;
+  cursor: pointer;
+}
+
+.route-select:focus {
+  border-color: var(--secondary);
+}
+
+.route-swap-btn {
+  align-self: center;
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.route-swap-btn:hover {
+  border-color: var(--secondary);
+  color: var(--secondary);
+  transform: rotate(180deg);
+}
+
+/* Route Stats Banner */
+.route-metrics-banner {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(14, 165, 233, 0.15));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-val {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.metric-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Turn-by-Turn Guidance Cards */
+.turn-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.step-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: all var(--transition-fast);
+}
+
+.step-card.active-step {
+  border-color: var(--accent);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.step-number-badge {
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 0.75rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-card.active-step .step-number-badge {
+  background: var(--accent);
+}
+
+.step-text {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  flex: 1;
+}
+
+.step-dist {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 0.2rem;
+}
+
+/* Voice Guidance Controller */
+.voice-guidance-bar {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.voice-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
